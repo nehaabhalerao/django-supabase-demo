@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Demo Django Project - Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Inventory Dashboard (Sample)</h1>
+  <div>
+    <canvas id="myChart" width="600" height="200"></canvas>
+  </div>
+  <script>
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/items/stats/');
+        const stat = await res.json();
+        const data = {
+          labels: ['Total Items','Total Quantity','Total Value'],
+          datasets: [{
+            label: 'Inventory Summary',
+            data: [stat.total_items, stat.total_quantity, stat.total_value],
+          }]
+        };
+        const ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, { type: 'bar', data: data });
+      } catch (e) {
+        document.body.insertAdjacentHTML('beforeend', '<p>Error loading stats: ' + e + '</p>');
+      }
+    }
+    loadStats();
+  </script>
+</body>
+</html>

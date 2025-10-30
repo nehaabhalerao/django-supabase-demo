@@ -1,18 +1,19 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv  # <-- Add this line to load .env variables
+from dotenv import load_dotenv  # Load environment variables
 
-# Load environment variables from .env file
+# Load environment variables from .env (for local use)
 load_dotenv()
 
+# BASE DIRECTORY
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY
 SECRET_KEY = os.environ.get('DJANGO_SECRET', 'dev-secret-key')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
-# APPS
+# APPLICATIONS
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -56,7 +57,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'demo.wsgi.application'
 
-# DATABASES (Supabase-ready)
+# DATABASE (Supabase-ready)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -71,9 +72,21 @@ DATABASES = {
     }
 }
 
-
-# PASSWORDS
-AUTH_PASSWORD_VALIDATORS = []
+# PASSWORD VALIDATION
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
 
 # INTERNATIONALIZATION
 LANGUAGE_CODE = 'en-us'
@@ -81,8 +94,10 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# STATIC FILES
+# STATIC FILES (for Render)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# DEFAULT AUTO FIELD
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
